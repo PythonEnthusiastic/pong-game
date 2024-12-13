@@ -8,7 +8,7 @@ BALL_RADIUS = 20
 
 class Racket:
     def __init__(self, pos_x):
-        self.racket = pygame.Rect(pos_x, (SCREEN_SIZE[1] / 2) - 50, 20, 110)
+        self.racket = pygame.Rect(pos_x, (SCREEN_SIZE[1] / 2) - 50, PADDLE_SIZE[0], PADDLE_SIZE[1])
         self.racket_speed = 7
 
     def move(self, direction):
@@ -44,6 +44,11 @@ class Ball:
     def collision(self, racket1, racket2):
         if self.ball.colliderect(racket1.racket) or self.ball.colliderect(racket2.racket):
             self.speed_x *= -1
+            if self.speed_y == 0:
+                self.speed_y = 5
+
+        if self.ball.y <= 0 or self.ball.y >= SCREEN_SIZE[1]:
+            self.speed_y *= -1
 
     def boundary(self):
         if self.ball.x > SCREEN_SIZE[0] or self.ball.x < 0:
@@ -75,6 +80,13 @@ class Pong:
         if keys[pygame.K_DOWN]:
             self.second_racket.move("down")
 
+    def display_score(self, num, pos_x):
+        font = pygame.font.Font(None, 100)
+        text_surface = font.render(str(num), True, (255, 255, 255))
+        text_rect = text_surface.get_rect()
+        text_rect.center = (SCREEN_SIZE[0] // 2 + pos_x, SCREEN_SIZE[1] - 30)
+        self.screen.blit(text_surface, text_rect)
+
     def handle_ball(self):
         self.ball.move()
         self.ball.collision(self.first_racket, self.second_racket)
@@ -91,7 +103,8 @@ class Pong:
                     self.running = False
             self.screen.fill("black")
 
-
+            self.display_score(self.first_scoreboard, 50)
+            self.display_score(self.second_scoreboard, -50)
             self.handle_player_keys()
             self.handle_ball()
             self.draw_objects()
