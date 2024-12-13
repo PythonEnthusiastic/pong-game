@@ -2,62 +2,56 @@ import pygame
 
 pygame.init()
 
-SCREEN_SIZE = (1280, 720)
+SCREEN_SIZE = (1280, 720) # (x, y)
+PADDLE_SIZE = (20, 110) # (width, height)
+BALL_RADIUS = 20 
 
 class Racket:
     def __init__(self, pos_x):
-        self.pos_x = pos_x
-        self.pos_y = (SCREEN_SIZE[1] / 2) - 50
+        self.racket = pygame.Rect(pos_x, (SCREEN_SIZE[1] / 2) - 50, 20, 110)
         self.racket_speed = 7
 
     def move(self, direction):
         if direction == "up":
-            self.pos_y -= self.racket_speed
+            self.racket.y -= self.racket_speed
         elif direction == "down":
-            self.pos_y += self.racket_speed
+            self.racket.y += self.racket_speed
 
         self.boundary()
 
     def boundary(self):
         y_bound = (0, 720 - 110)
 
-        if self.pos_y > y_bound[1]:
-            self.pos_y = y_bound[1]
-        elif self.pos_y < y_bound[0]:
-            self.pos_y = y_bound[0]
+        if self.racket.y > y_bound[1]:
+            self.racket.y = y_bound[1]
+        elif self.racket.y < y_bound[0]:
+            self.racket.y = y_bound[0]
 
     def draw(self, screen):
-        pygame.draw.rect(screen, "white", pygame.Rect(self.pos_x, self.pos_y, 20, 110))
+        pygame.draw.rect(screen, "white", self.racket)
 
 class Ball:
     def __init__(self):
-        self.radius = 20
-        self.pos_x = SCREEN_SIZE[0]/2
-        self.pos_y = SCREEN_SIZE[1]/2
+        self.ball = pygame.Rect(SCREEN_SIZE[0]/2, SCREEN_SIZE[1]/2, BALL_RADIUS, BALL_RADIUS)
         self.speed_x = 10
         self.speed_y = 0
 
     def move(self):
-        self.pos_x += self.speed_x
-        self.pos_y += self.speed_y
+        self.ball.x += self.speed_x
+        self.ball.y += self.speed_y
         self.boundary()
 
     def collision(self, racket1, racket2):
-        racket1_pos = [racket1.pos_x, racket1.pos_y]
-        racket2_pos = [racket2.pos_x, racket2.pos_y]
-
-        if ((racket1_pos[0] - 40) <= self.pos_x <= (racket1_pos[0] + 40)) and ((racket1_pos[1] - 110 - 20) <= self.pos_y <= racket1_pos[1] + 110 + 20):
-            self.speed_x *= -1
-        elif ((racket2_pos[0] - 40) <= self.pos_x <= (racket2_pos[0] + 40)) and ((racket2_pos[1] - 110 - 20) <= self.pos_y <= racket2_pos[1] + 110 + 20):
+        if self.ball.colliderect(racket1.racket) or self.ball.colliderect(racket2.racket):
             self.speed_x *= -1
 
     def boundary(self):
-        if self.pos_x > SCREEN_SIZE[0] or self.pos_x < 0:
-            self.pos_x = SCREEN_SIZE[0]/2
-            self.pos_y = SCREEN_SIZE[1]/2
+        if self.ball.x > SCREEN_SIZE[0] or self.ball.x < 0:
+            self.ball.x = SCREEN_SIZE[0]/2
+            self.ball.y = SCREEN_SIZE[1]/2
 
     def draw(self, screen):
-        pygame.draw.circle(screen, "red", (self.pos_x, self.pos_y), self.radius)
+        pygame.draw.ellipse(screen, "red", self.ball)
 
 class Pong:
     def __init__(self):
