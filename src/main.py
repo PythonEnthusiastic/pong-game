@@ -9,7 +9,9 @@ KEY_SET = [pygame.K_w, pygame.K_s, pygame.K_UP, pygame.K_DOWN]
 
 class Racket:
     def __init__(self, pos_x):
-        self.racket = pygame.Rect(pos_x, (SCREEN_SIZE[1] / 2) - 50, PADDLE_SIZE[0], PADDLE_SIZE[1])
+        self.racket = pygame.Rect(
+            pos_x, (SCREEN_SIZE[1] / 2) - 50, PADDLE_SIZE[0], PADDLE_SIZE[1]
+        )
         self.racket_speed = 7
 
     def move(self, direction):
@@ -118,13 +120,14 @@ class Pong:
         self.second_scoreboard = 0
         self.player_start = False
     
-    def check_winner(self):
+    def check_scorer(self):
         scorer = self.ball.boundary()
         if scorer == 1:
             self.first_scoreboard += 1
         elif scorer == -1:
             self.second_scoreboard += 1
 
+    def check_winner(self):
         if self.first_scoreboard == 10 or self.second_scoreboard == 10:
             self.full_reset()
             
@@ -144,6 +147,7 @@ class Pong:
             self.handle_player_keys()
             if self.player_start:
                 self.handle_ball()
+                self.check_scorer()
                 self.check_winner()
             self.draw_objects()
 
