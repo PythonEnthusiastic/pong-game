@@ -5,6 +5,7 @@ pygame.init()
 SCREEN_SIZE = (1280, 720) # (x, y)
 PADDLE_SIZE = (20, 110) # (width, height)
 BALL_RADIUS = 20 
+KEY_SET = [pygame.K_w, pygame.K_s, pygame.K_UP, pygame.K_DOWN]
 
 class Racket:
     def __init__(self, pos_x):
@@ -86,16 +87,12 @@ class Pong:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
             self.first_racket.move("up")
-            self.player_start = True
         if keys[pygame.K_s]:
             self.first_racket.move("down")
-            self.player_start = True
         if keys[pygame.K_UP]:
             self.second_racket.move("up")
-            self.player_start = True
         if keys[pygame.K_DOWN]:
             self.second_racket.move("down")
-            self.player_start = True
 
     def display_score(self, num, pos_x):
         font = pygame.font.Font(None, 100)
@@ -136,6 +133,10 @@ class Pong:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key in KEY_SET:
+                        self.player_start = True
+
             self.screen.fill("black")
 
             self.display_score(self.first_scoreboard, 50)
